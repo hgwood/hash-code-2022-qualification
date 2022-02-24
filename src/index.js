@@ -24,12 +24,10 @@ function writeOutput(content) {
 }
 
 let personIndex = 0;
-
 const solution = [];
-
 for (const project of input.projects) {
     const cast = [];
-    for (let i = 0; i <= project.nroles; i++) {
+    for (let i = 0; i < project.nroles; i++) {
         cast.push(input.contributors[personIndex % input.contributors.length].name);
         personIndex++;
     }
