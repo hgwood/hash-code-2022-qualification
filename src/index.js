@@ -28,9 +28,9 @@ for (const contributor of input.contributors) {
     contributor.available = 0;
     for (const skill of contributor.skills) {
         if (!contributorsBySkill[skill.name]) {
-            contributorsBySkill[skill.name] = [{contributor, skill}];
+            contributorsBySkill[skill.name] = [{ contributor, skill }];
         } else {
-            contributorsBySkill[skill.name].push({contributor, skill});
+            contributorsBySkill[skill.name].push({ contributor, skill });
         }
     }
 }
@@ -80,7 +80,7 @@ while(projectsRemainded.size > 0) {
     }
 }
 
-logger(JSON.stringify(solution));
+//logger(JSON.stringify(solution));
 
 
 writeOutput(formatSolution(solution));
