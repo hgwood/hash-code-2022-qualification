@@ -1,0 +1,33 @@
+[
+  "ncontributors",
+  "nprojects",
+  [
+    "contributors",
+    "ncontributors",
+    [
+      { "name": "name", "value": { "type": "string" } },
+      "nskills",
+      [
+        "skills",
+        "nskills",
+        [{ "name": "name", "value": { "type": "string" } }, "level"]
+      ]
+    ]
+  ],
+  [
+    "projects",
+    "nprojects",
+    [
+      { "name": "name", "value": { "type": "string" } },
+      "ndays",
+      "score",
+      "bestBefore",
+      "nroles",
+      [
+        "skills",
+        "nroles",
+        [{ "name": "name", "value": { "type": "string" } }, "level"]
+      ]
+    ]
+  ]
+]
