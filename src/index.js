@@ -39,9 +39,9 @@ for (const contributor of input.contributors) {
 logger(JSON.stringify(contributorsBySkill));
 
 function sortProjects(projects) {
-    return projects.sort((a, b) => b.ndays - a.ndays);
+    // return projects.sort((a, b) => b.ndays - a.ndays);
     // return projects.sort((a, b) => b.bestBefore - a.bestBefore);
-    //return projects.sort((a, b) => a.score - b.score);
+    return projects.sort((a, b) => a.score - b.score);
 }
 
 const solution = [];
@@ -55,15 +55,27 @@ while(projectsRemainded.size > 0) {
         let projectStartDate = 0;
         const cast = [];
         const castSet = new Set();
+        const skillsOnProject = new Map()
         for (let skill of project.skills) {
             const candidate = contributorsBySkill[skill.name]
                 .filter(c => !castSet.has(c.contributor.name) && !candidates.has(c.contributor.name))
-                .filter(c => c.skill.level >= skill.level)
+                .filter(c => {
+                  if ((skillsOnProject.get(c.skill.name) ?? 0) >= skill.level) {
+                    return c.skill.level >= skill.level - 1
+                  }
+                  return c.skill.level >= skill.level
+                })
                 .sort((a, b) => b.contributor.available - a.contributor.available)
                 [0];
             if (candidate) {
                 cast.push(candidate);
                 castSet.add(candidate.contributor.name);
+                candidate.contributor.skills.forEach(contributorSkill => {
+                  skillsOnProject.set(
+                    contributorSkill.name,
+                    Math.max(skillsOnProject.get(contributorSkill.name) || 0, contributorSkill.level)
+                  );
+                })
                 projectStartDate = Math.max(projectStartDate, candidate.contributor.available);
             }
         }
