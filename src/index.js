@@ -54,7 +54,8 @@ for (const project of sortProjects(input.projects)) {
             [0];
         if (candidate) {
             cast.add(candidate.contributor.name);
-            candidate.skill.level++;
+            if (skill.level == candidate.skill.level)
+                candidate.skill.level++;
             candidate.contributor.available += project.ndays;
         }
     }
