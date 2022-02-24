@@ -39,28 +39,45 @@ for (const contributor of input.contributors) {
 logger(JSON.stringify(contributorsBySkill));
 
 function sortProjects(projects) {
-    return projects.sort((a, b) => b.bestBefore - a.bestBefore);
+    return projects.sort((a, b) => b.ndays - a.ndays);
+    // return projects.sort((a, b) => b.bestBefore - a.bestBefore);
     //return projects.sort((a, b) => a.score - b.score);
 }
 
 const solution = [];
-for (const project of sortProjects(input.projects)) {
-    const cast = new Set();
-    for (let skill of project.skills) {
-        const candidate = contributorsBySkill[skill.name]
-            .filter(c => !cast.has(c.contributor.name))
-            .filter(c => c.skill.level >= skill.level)
-            .sort((a, b) => b.contributor.available - a.contributor.available)
-            [0];
-        if (candidate) {
-            cast.add(candidate.contributor.name);
-            if (skill.level == candidate.skill.level)
-                candidate.skill.level++;
-            candidate.contributor.available += project.ndays;
+const projectsRemainded = new Set(input.projects.map(({ name }) => name));
+let step = 0;
+while(projectsRemainded.size > 0) {
+    debug(step);
+    const candidates = new Set();
+    for (const project of sortProjects(input.projects)) {
+        if (!projectsRemainded.has(project.name)) continue;
+        let projectStartDate = 0;
+        const cast = [];
+        for (let skill of project.skills) {
+            const candidate = contributorsBySkill[skill.name]
+                .filter(c => !cast.includes(c) && !candidates.has(c.contributor.name))
+                .filter(c => c.skill.level >= skill.level)
+                .sort((a, b) => b.contributor.available - a.contributor.available)
+                [0];
+            if (candidate) {
+                cast.push(candidate);
+                projectStartDate = Math.max(projectStartDate, candidate.contributor.available);
+            }
+        }
+        if (cast.length == project.nroles) {
+            projectsRemainded.delete(project.name);
+            solution.push({ name: project.name, people: [...cast.map(({ contributor :{ name }} ) => name)] });
+            cast.forEach(({ contributor, skill }) => {
+                contributor.available = projectStartDate + project.ndays;
+                skill.level++;
+                candidates.add(contributor.name);
+            });
         }
     }
-    if (cast.size == project.nroles)
-        solution.push({ name: project.name, people: [...cast] });
+    if (candidates.size == 0) {
+        break;
+    }
 }
 
 logger(JSON.stringify(solution));
