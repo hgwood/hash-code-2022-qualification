@@ -41,13 +41,13 @@ logger(JSON.stringify(contributorsBySkill));
 function sortProjects(projects) {
     // return projects.sort((a, b) => b.ndays - a.ndays);
     // return projects.sort((a, b) => b.bestBefore - a.bestBefore);
-    return projects.sort((a, b) => a.score - b.score);
+    return projects.sort((a, b) => (a.score - b.score) + (b.ndays - a.ndays) + (b.bestBefore - a.bestBefore));
 }
 
 const solution = [];
 const projectsRemainded = new Set(input.projects.map(({ name }) => name));
 let step = 0;
-while(projectsRemainded.size > 0) {
+while (projectsRemainded.size > 0) {
     debug(step);
     const candidates = new Set();
     for (const project of sortProjects(input.projects)) {
@@ -58,30 +58,30 @@ while(projectsRemainded.size > 0) {
         const skillsOnProject = new Map()
         for (let skill of project.skills) {
             const candidate = contributorsBySkill[skill.name]
-                .filter(c => !castSet.has(c.contributor.name) && !candidates.has(c.contributor.name))
+                .filter(c => !castSet.has(c.contributor.name))
                 .filter(c => {
-                  if ((skillsOnProject.get(c.skill.name) ?? 0) >= skill.level) {
-                    return c.skill.level >= skill.level - 1
-                  }
-                  return c.skill.level >= skill.level
+                    if ((skillsOnProject.get(c.skill.name) ?? 0) >= skill.level) {
+                        return c.skill.level >= skill.level - 1
+                    }
+                    return c.skill.level >= skill.level
                 })
                 .sort((a, b) => b.contributor.available - a.contributor.available)
-                [0];
+            [0];
             if (candidate) {
                 cast.push(candidate);
                 castSet.add(candidate.contributor.name);
                 candidate.contributor.skills.forEach(contributorSkill => {
-                  skillsOnProject.set(
-                    contributorSkill.name,
-                    Math.max(skillsOnProject.get(contributorSkill.name) || 0, contributorSkill.level)
-                  );
+                    skillsOnProject.set(
+                        contributorSkill.name,
+                        Math.max(skillsOnProject.get(contributorSkill.name) || 0, contributorSkill.level)
+                    );
                 })
                 projectStartDate = Math.max(projectStartDate, candidate.contributor.available);
             }
         }
         if (cast.length == project.nroles) {
             projectsRemainded.delete(project.name);
-            solution.push({ name: project.name, people: [...cast.map(({ contributor :{ name }} ) => name)] });
+            solution.push({ name: project.name, people: [...cast.map(({ contributor: { name } }) => name)] });
             cast.forEach(({ contributor, skill }) => {
                 contributor.available = projectStartDate + project.ndays;
                 if (skill.level <= project.skills.find(s => s.name == skill.name).level) {
