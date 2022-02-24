@@ -84,7 +84,7 @@ while(projectsRemainded.size > 0) {
             solution.push({ name: project.name, people: [...cast.map(({ contributor :{ name }} ) => name)] });
             cast.forEach(({ contributor, skill }) => {
                 contributor.available = projectStartDate + project.ndays;
-                if (skill.level == project.skills.find(s => s.name == skill.name).level) {
+                if (skill.level <= project.skills.find(s => s.name == skill.name).level) {
                     skill.level++;
                 }
                 candidates.add(contributor.name);
