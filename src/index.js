@@ -54,14 +54,16 @@ while(projectsRemainded.size > 0) {
         if (!projectsRemainded.has(project.name)) continue;
         let projectStartDate = 0;
         const cast = [];
+        const castSet = new Set();
         for (let skill of project.skills) {
             const candidate = contributorsBySkill[skill.name]
-                .filter(c => !cast.includes(c) && !candidates.has(c.contributor.name))
+                .filter(c => !castSet.has(c.contributor.name) && !candidates.has(c.contributor.name))
                 .filter(c => c.skill.level >= skill.level)
                 .sort((a, b) => b.contributor.available - a.contributor.available)
                 [0];
             if (candidate) {
                 cast.push(candidate);
+                castSet.add(candidate.contributor.name);
                 projectStartDate = Math.max(projectStartDate, candidate.contributor.available);
             }
         }
