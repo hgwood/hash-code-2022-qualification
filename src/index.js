@@ -38,6 +38,7 @@ for (const contributor of input.contributors) {
 logger(JSON.stringify(contributorsBySkill));
 
 function sortProjects(projects) {
+    //return projects.sort((a, b) => b.bestBefore - b.bestBefore);
     return projects.sort((a, b) => a.score - b.score);
 }
 
