@@ -38,8 +38,8 @@ for (const contributor of input.contributors) {
 logger(JSON.stringify(contributorsBySkill));
 
 function sortProjects(projects) {
-    //return projects.sort((a, b) => b.bestBefore - b.bestBefore);
-    return projects.sort((a, b) => a.score - b.score);
+    return projects.sort((a, b) => b.bestBefore - a.bestBefore);
+    //return projects.sort((a, b) => a.score - b.score);
 }
 
 const solution = [];
@@ -49,7 +49,10 @@ for (const project of sortProjects(input.projects)) {
         const candidate = contributorsBySkill[skill.name]
             .filter(c => !cast.has(c.name))
             .find(c => c.skill.level >= skill.level);
-        if (candidate) cast.add(candidate.name);
+        if (candidate) {
+            cast.add(candidate.name);
+            candidate.skill.level++;
+        }
     }
     if (cast.size == project.nroles)
         solution.push({ name: project.name, people: [...cast] });
