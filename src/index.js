@@ -12,15 +12,31 @@ const logger = debug("root");
  * @returns {string}
  */
 function formatSolution(solution) {
-  const projectLines = solution.flatMap(({ name, people }) => [
-    name,
-    people.join(" "),
-  ]);
-  return [Number(solution.length), ...projectLines].join("\n");
+    const projectLines = solution.flatMap(({ name, people }) => [
+        name,
+        people.join(" "),
+    ]);
+    return [Number(solution.length), ...projectLines].join("\n");
 }
 
 function writeOutput(content) {
-  writeFileSync(process.env.PETIBRUGNON_OUTPUT_FILE_PATH, content);
+    writeFileSync(process.env.PETIBRUGNON_OUTPUT_FILE_PATH, content);
 }
 
-writeOutput(formatSolution([]));
+let personIndex = 0;
+
+const solution = [];
+
+for (const project of input.projects) {
+    const cast = [];
+    for (let i = 0; i <= project.nroles; i++) {
+        cast.push(input.contributors[personIndex % input.contributors.length].name);
+        personIndex++;
+    }
+    solution.push({ name: project.name, people: cast });
+}
+
+logger(JSON.stringify(solution));
+
+
+writeOutput(formatSolution(solution));
