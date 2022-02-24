@@ -23,15 +23,30 @@ function writeOutput(content) {
     writeFileSync(process.env.PETIBRUGNON_OUTPUT_FILE_PATH, content);
 }
 
-let personIndex = 0;
+const contributorsBySkill = {}
+for (const contributor of input.contributors) {
+    for (const skill of contributor.skills) {
+        if (!contributorsBySkill[skill.name]) {
+            contributorsBySkill[skill.name] = [contributor]
+        } else {
+            contributorsBySkill[skill.name].push(contributor);
+        }
+    }
+}
+
+
+logger(JSON.stringify(contributorsBySkill));
+
 const solution = [];
 for (const project of input.projects) {
     const cast = [];
-    for (let i = 0; i < project.nroles; i++) {
-        cast.push(input.contributors[personIndex % input.contributors.length].name);
-        personIndex++;
+    for (let skill of project.skills) {
+        const candidate = contributorsBySkill[skill.name]
+            .find(c => c.skills.find(s => s.name === skill.name)?.level >= skill.level);
+        if (candidate) cast.push(candidate.name);
     }
-    solution.push({ name: project.name, people: cast });
+    if (cast.length == project.nroles)
+        solution.push({ name: project.name, people: cast });
 }
 
 logger(JSON.stringify(solution));
