@@ -37,8 +37,12 @@ for (const contributor of input.contributors) {
 
 logger(JSON.stringify(contributorsBySkill));
 
+function sortProjects(projects) {
+    return projects.sort((a, b) => b.bestBefore - a.bestBefore);
+}
+
 const solution = [];
-for (const project of input.projects) {
+for (const project of sortProjects(input.projects)) {
     const cast = new Set();
     for (let skill of project.skills) {
         const candidate = contributorsBySkill[skill.name]
