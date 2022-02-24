@@ -16,7 +16,7 @@ function formatSolution(solution) {
         name,
         people.join(" "),
     ]);
-    return [Number(solution.length), ...projectLines].join("\n");
+    return [Number(solution.length || 0), ...projectLines].join("\n");
 }
 
 function writeOutput(content) {
