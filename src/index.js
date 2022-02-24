@@ -28,9 +28,9 @@ for (const contributor of input.contributors) {
     contributor.available = 0;
     for (const skill of contributor.skills) {
         if (!contributorsBySkill[skill.name]) {
-            contributorsBySkill[skill.name] = [{contributor, skill}];
+            contributorsBySkill[skill.name] = [{ contributor, skill }];
         } else {
-            contributorsBySkill[skill.name].push({contributor, skill});
+            contributorsBySkill[skill.name].push({ contributor, skill });
         }
     }
 }
@@ -51,19 +51,22 @@ for (const project of sortProjects(input.projects)) {
             .filter(c => !cast.has(c.contributor.name))
             .filter(c => c.skill.level >= skill.level)
             .sort((a, b) => b.contributor.available - a.contributor.available)
-            [0];
+        [0];
         if (candidate) {
             cast.add(candidate.contributor.name);
-            if (skill.level == candidate.skill.level)
+            if (skill.level == candidate.skill.level) {
                 candidate.skill.level++;
+                logger(`Candidate ${candidate.contributor.name} levels ${candidate.skill.name} to ${candidate.skill.level} on projet ${project.name}`)
+            }
             candidate.contributor.available += project.ndays;
+
         }
     }
     if (cast.size == project.nroles)
         solution.push({ name: project.name, people: [...cast] });
 }
 
-logger(JSON.stringify(solution));
+//logger(JSON.stringify(solution));
 
 
 writeOutput(formatSolution(solution));
