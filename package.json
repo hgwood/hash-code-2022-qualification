@@ -1,0 +1,8 @@
+{
+  "name": "hash-code-2022-qualification",
+  "version": "1.0.0",
+  "dependencies": {
+    "debug": "4.3.3",
+    "lodash": "4.17.21"
+  }
+}
