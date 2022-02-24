@@ -25,11 +25,12 @@ function writeOutput(content) {
 
 const contributorsBySkill = {}
 for (const contributor of input.contributors) {
+    contributor.available = 0;
     for (const skill of contributor.skills) {
         if (!contributorsBySkill[skill.name]) {
-            contributorsBySkill[skill.name] = [{name: contributor.name, skill}];
+            contributorsBySkill[skill.name] = [{contributor, skill}];
         } else {
-            contributorsBySkill[skill.name].push({name: contributor.name, skill});
+            contributorsBySkill[skill.name].push({contributor, skill});
         }
     }
 }
@@ -47,11 +48,14 @@ for (const project of sortProjects(input.projects)) {
     const cast = new Set();
     for (let skill of project.skills) {
         const candidate = contributorsBySkill[skill.name]
-            .filter(c => !cast.has(c.name))
-            .find(c => c.skill.level >= skill.level);
+            .filter(c => !cast.has(c.contributor.name))
+            .filter(c => c.skill.level >= skill.level)
+            .sort((a, b) => b.contributor.available - a.contributor.available)
+            [0];
         if (candidate) {
-            cast.add(candidate.name);
+            cast.add(candidate.contributor.name);
             candidate.skill.level++;
+            candidate.contributor.available += project.ndays;
         }
     }
     if (cast.size == project.nroles)
