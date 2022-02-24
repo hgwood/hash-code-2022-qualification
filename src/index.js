@@ -27,9 +27,9 @@ const contributorsBySkill = {}
 for (const contributor of input.contributors) {
     for (const skill of contributor.skills) {
         if (!contributorsBySkill[skill.name]) {
-            contributorsBySkill[skill.name] = [contributor]
+            contributorsBySkill[skill.name] = [{name: contributor.name, skill}];
         } else {
-            contributorsBySkill[skill.name].push(contributor);
+            contributorsBySkill[skill.name].push({name: contributor.name, skill});
         }
     }
 }
@@ -39,14 +39,15 @@ logger(JSON.stringify(contributorsBySkill));
 
 const solution = [];
 for (const project of input.projects) {
-    const cast = [];
+    const cast = new Set();
     for (let skill of project.skills) {
         const candidate = contributorsBySkill[skill.name]
-            .find(c => c.skills.find(s => s.name === skill.name)?.level >= skill.level);
-        if (candidate) cast.push(candidate.name);
+            .filter(c => !cast.has(c.name))
+            .find(c => c.skill.level >= skill.level);
+        if (candidate) cast.add(candidate.name);
     }
-    if (cast.length == project.nroles)
-        solution.push({ name: project.name, people: cast });
+    if (cast.size == project.nroles)
+        solution.push({ name: project.name, people: [...cast] });
 }
 
 logger(JSON.stringify(solution));
